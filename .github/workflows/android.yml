@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
+    tags:
+      - 'v*-hotyb-*'
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -58,17 +60,21 @@ jobs:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
     - name: Gradle build
-      if: github.event_name != 'release' && github.ref_name == 'develop'
+      if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-hotyb-')
       run: |
         chmod +x gradlew
         ./gradlew assembleRelease
 
-    - name: Upload branch build artifact
-      if: github.event_name != 'release' && github.ref_name == 'develop'
-      uses: actions/upload-artifact@v4
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-hotyb-')
+      uses: softprops/action-gh-release@v1
       with:
-        name: yggdrasil-android-${{ github.ref_name }}
-        path: app/build/outputs/apk/release/*.apk
+        files: app/build/outputs/apk/release/*.apk
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Gradle signed build
       if: github.event_name == 'release' || github.ref_name == 'main'
