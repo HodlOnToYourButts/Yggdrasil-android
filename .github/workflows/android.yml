@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -58,13 +58,13 @@ jobs:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
     - name: Gradle build
-      if: github.event_name != 'release' && github.ref_name != 'main'
+      if: github.event_name != 'release' && github.ref_name == 'develop'
       run: |
         chmod +x gradlew
         ./gradlew assembleRelease
 
     - name: Upload branch build artifact
-      if: github.event_name != 'release' && github.ref_name != 'main'
+      if: github.event_name != 'release' && github.ref_name == 'develop'
       uses: actions/upload-artifact@v3
       with:
         name: yggdrasil-android-${{ github.ref_name }}
