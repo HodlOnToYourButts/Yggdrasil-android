@@ -65,7 +65,7 @@ jobs:
 
     - name: Upload branch build artifact
       if: github.event_name != 'release' && github.ref_name == 'develop'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: yggdrasil-android-${{ github.ref_name }}
         path: app/build/outputs/apk/release/app-release.apk
@@ -80,7 +80,7 @@ jobs:
 
     - name: Upload build artifact
       if: github.event_name == 'release' || github.ref_name == 'main'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: yggdrasil-android
         path: app/build/outputs/apk/yggdrasil/app-yggdrasil.apk
